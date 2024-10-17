@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS password_entries (
     last_name VARCHAR(50) NOT NULL,                -- The last name of the user (e.g., "Fletcher")
     username VARCHAR(50) NOT NULL,                 -- The username used for login on the site (e.g., "andrew.flet")
     email VARCHAR(100) NOT NULL,                   -- The email address of the user (e.g., "afletcher@hartford.edu")
-    password VARBINARY(255) NOT NULL,              -- The encrypted password (stored as binary data)
+    password VARBINARY(255) NOT NULL,              -- The encrypted password
     comment TEXT,                                  -- Optional comment field for any additional notes
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Automatically records the time the entry was created
 );

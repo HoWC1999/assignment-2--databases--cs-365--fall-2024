@@ -3,7 +3,7 @@ SET block_encryption_mode = 'aes-256-cbc';
 SET @key_str = UNHEX(SHA2('SuperSecretKey123!', 256));
 
 -- Set a fixed initialization vector (IV)
-SET @fixed_iv = UNHEX('00112233445566778899AABBCCDDEEFF');  -- Fixed IV as dynamic IV's were causing decryption issues
+SET @fixed_iv = UNHEX('00112233445566778899AABBCCDDEEFF');  -- Fixed IV as dynamic IV's were causing decryption issues, for prod, I would use a Key Management Service
 
 -- Insert initial entries into the password_entries table with encrypted passwords
 INSERT INTO password_entries (website_name, website_url, first_name, last_name, username, email, password, comment, created_at)
