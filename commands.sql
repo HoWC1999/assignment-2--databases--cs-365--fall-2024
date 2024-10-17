@@ -1,51 +1,53 @@
 -- Use the passwords database
 USE passwords;
 
--- Ensure the encryption settings and variables are set
+-- Set the encryption mode to AES-256-CBC
 SET block_encryption_mode = 'aes-256-cbc';
-SET @key_str = UNHEX(SHA2('my secret passphrase', 256));
 
--- Important: Use the same initialization vector (IV) used during encryption
--- For demonstration purposes, we'll set @init_vector to the same value
--- In practice, the IV should be stored and retrieved securely
--- Here we assume @init_vector was previously stored or known
--- For the example, let's set @init_vector to a fixed value
-SET @init_vector = UNHEX('000102030405060708090A0B0C0D0E0F');
+-- Set the encryption key by using a securely hashed passphrase 'SuperSecretKey123!' with SHA-512
+SET @key_str = UNHEX(SHA2('SuperSecretKey123!', 256));
 
--- 1. Create a new entry into the database, which already has your 10 initial entries
-INSERT INTO password_entries (
-  website_name, website_url, first_name, last_name, username, email, password, comment, created_at
-) VALUES (
-  'Example New Site', 'http://www.newsite.com', 'New', 'User', 'nuser', 'new.user@example.com',
-  AES_ENCRYPT('newpassword', @key_str, @init_vector), 'Newly added entry', CURRENT_TIMESTAMP
-);
+-- Set a fixed initialization vector (IV)
+SET @fixed_iv = UNHEX('00112233445566778899AABBCCDDEEFF');  -- Fixed IV as dynamic IV's were causing decryption issues, in real prod, I would use a Key Management Service
 
--- 2. Get the password associated with the URL of one of your 10 entries (e.g., 'http://hartford.edu')
-SELECT AES_DECRYPT(password, @key_str, @init_vector) AS password_plaintext
+-- 1. Insert a new password entry into the database
+-- INSERT INTO password_entries (website_name, website_url, first_name, last_name, username, email, password, comment, created_at)
+-- VALUES ('Ebay', 'https://ebay.com', 'Andrew', 'Fletcher', 'andrew.ebay', 'afletcher@hartford.edu',
+--  AES_ENCRYPT('Str0ngEBayPwD11!', @key_str, @fixed_iv), 'Ebay account', CURRENT_TIMESTAMP);
+
+-- 2. Retrieve the decrypted password for a specific website
+SELECT website_url,
+  CONVERT(AES_DECRYPT(password, @key_str, @fixed_iv) USING 'utf8') AS decrypted_password, created_at
 FROM password_entries
-WHERE website_url = 'http://hartford.edu';
+WHERE website_url = 'https://google.com';
 
--- 3. Get all the password-related data, including the password, associated with URLs that have https in two of your 10 entries
-SELECT website_name, website_url, first_name, last_name, username, email,
-       AES_DECRYPT(password, @key_str, @init_vector) AS password_plaintext, comment, created_at
-FROM password_entries
-WHERE website_url LIKE 'https%';
+-- 3. Get all the password-related data for entries that use HTTPS URLs
+-- SELECT website_name, website_url, username, email,
+  -- CONVERT(AES_DECRYPT(password, @key_str, @fixed_iv) USING 'utf8') AS decrypted_password, comment, created_at
+-- FROM password_entries
+-- WHERE website_url LIKE 'https://%';
 
--- 4. Change a URL associated with one of the passwords in your 10 entries (e.g., change Twitter URL to 'https://twitter.com')
-UPDATE password_entries
-SET website_url = 'https://twitter.com'
-WHERE website_url = 'http://twitter.com';
+-- 4. Update the URL for an existing entry
+-- UPDATE password_entries
+-- SET website_url = 'https://twitter.com'
+-- WHERE website_name = 'Twitter';
+-- SELECT website_url FROM password_entries WHERE website_name = 'Twitter';
 
--- 5. Change any password (e.g., change password for username 'cwilliams')
-UPDATE password_entries
-SET password = AES_ENCRYPT('newcarolpassword', @key_str, @init_vector)
-WHERE username = 'cwilliams';
+-- 5. Update the password for a specific entry (Example for Hartford account)
+-- SELECT password FROM password_entries WHERE website_name = 'University of Hartford';
+-- UPDATE password_entries
+-- SET password = AES_ENCRYPT('Univ3rsity!2024New', @key_str, @fixed_iv)
+-- WHERE website_name = 'University of Hartford';
+-- SELECT password FROM password_entries WHERE website_name = 'University of Hartford';
 
--- 6. Remove a tuple based on a URL (e.g., remove entry with URL 'http://linkedin.com')
-DELETE FROM password_entries
-WHERE website_url = 'http://linkedin.com';
+-- 6. Delete an entry based on its URL
+-- SELECT * FROM password_entries;
+-- DELETE FROM password_entries
+-- WHERE website_url = 'http://instagram.com';
+-- SELECT * FROM password_entries;
 
--- 7. Remove a tuple based on a password (e.g., remove entry where password is 'frankspass')
-DELETE FROM password_entries
-WHERE password = AES_ENCRYPT('frankspass', @key_str, @init_vector);
-
+-- 7. Delete an entry based on its decrypted password
+-- SELECT * FROM password_entries;
+-- DELETE FROM password_entries
+-- WHERE AES_DECRYPT(password, @key_str, @fixed_iv) = 'N3tflixP@ssword2021';
+-- SELECT * FROM password_entries;

@@ -3,7 +3,7 @@
 DROP DATABASE IF EXISTS passwords;
 
 -- Create a new database named 'passwords'
-CREATE DATABASE passwords;
+CREATE DATABASE passwords DEFAULT CHARACTER SET utf8mb4;
 
 -- Drop the user if it already exists
 DROP USER IF EXISTS 'passwords_db_user'@'localhost';
