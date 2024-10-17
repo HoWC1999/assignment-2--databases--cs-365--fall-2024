@@ -16,10 +16,10 @@ SET @fixed_iv = UNHEX('00112233445566778899AABBCCDDEEFF');  -- Fixed IV as dynam
 --  AES_ENCRYPT('Str0ngEBayPwD11!', @key_str, @fixed_iv), 'Ebay account', CURRENT_TIMESTAMP);
 
 -- 2. Retrieve the decrypted password for a specific website
-SELECT website_url,
-  CONVERT(AES_DECRYPT(password, @key_str, @fixed_iv) USING 'utf8') AS decrypted_password, created_at
-FROM password_entries
-WHERE website_url = 'https://google.com';
+-- SELECT website_url,
+--  CONVERT(AES_DECRYPT(password, @key_str, @fixed_iv) USING 'utf8mb4') AS decrypted_password, created_at
+-- FROM password_entries
+-- WHERE website_url = 'https://google.com';
 
 -- 3. Get all the password-related data for entries that use HTTPS URLs
 -- SELECT website_name, website_url, username, email,
