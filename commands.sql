@@ -14,22 +14,24 @@ SET @fixed_iv = UNHEX('00112233445566778899AABBCCDDEEFF');  -- Fixed IV as dynam
 -- INSERT INTO password_entries (website_name, website_url, first_name, last_name, username, email, password, comment, created_at)
 -- VALUES ('Ebay', 'https://ebay.com', 'Andrew', 'Fletcher', 'andrew.ebay', 'afletcher@hartford.edu',
 --  AES_ENCRYPT('Str0ngEBayPwD11!', @key_str, @fixed_iv), 'Ebay account', CURRENT_TIMESTAMP);
+-- SELECT * FROM password_entries WHERE website_name = 'Ebay';
 
 -- 2. Retrieve the decrypted password for a specific website
 -- SELECT website_url,
---  CONVERT(AES_DECRYPT(password, @key_str, @fixed_iv) USING 'utf8mb4') AS decrypted_password, created_at
+-- CONVERT(AES_DECRYPT(password, @key_str, @fixed_iv) USING 'utf8mb4') AS decrypted_password
 -- FROM password_entries
 -- WHERE website_url = 'https://google.com';
 
 -- 3. Get all the password-related data for entries that use HTTPS URLs
 -- SELECT website_name, website_url, username, email,
-  -- CONVERT(AES_DECRYPT(password, @key_str, @fixed_iv) USING 'utf8mb4') AS decrypted_password, comment, created_at
+--  CONVERT(AES_DECRYPT(password, @key_str, @fixed_iv) USING 'utf8mb4') AS decrypted_password, comment, created_at
 -- FROM password_entries
 -- WHERE website_url LIKE 'https://%';
 
 -- 4. Update the URL for an existing entry
+-- SELECT website_url FROM password_entries WHERE website_name = 'Twitter';
 -- UPDATE password_entries
--- SET website_url = 'https://twitter.com'
+-- SET website_url = 'https://x.com'
 -- WHERE website_name = 'Twitter';
 -- SELECT website_url FROM password_entries WHERE website_name = 'Twitter';
 
